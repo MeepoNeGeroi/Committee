@@ -1,8 +1,7 @@
 package org.example.model.service;
 
-import org.example.model.dao.impl.BillDAO;
-import org.example.model.entity.Bill;
-import org.example.model.entity.Enrollee;
+import org.example.model.dao.impl.CommitteeDAO;
+import org.example.model.entity.*;
 import org.example.model.enums.Faculties;
 
 import java.io.IOException;
@@ -11,46 +10,59 @@ import java.util.List;
 
 public class EnrolledStudentsService {
     public List<Enrollee> getEnrolledStudents(Faculties faculty) throws IOException {
-        List<Enrollee> enrolledStudents = new ArrayList<>();
-        List<Bill> bills = BillDAO.getInstance().read();
-        List<Bill> sortedByFaculties = sortedByFaculties(bills, faculty);
-        List<Bill> sortedByScore = sortedByScore(sortedByFaculties);
+        Committee committee = CommitteeDAO.getInstance().read();
+        List<Enrollee> enrollees = new ArrayList<>();
+        List<Enrollee> enrolledStudents = committee.getBill().getAdministrator().getEnrollee();
+        List<Enrollee> sortedByFaculty = sortedByFaculties(enrolledStudents, faculty);
+        List<Enrollee> sortedByScore = sortedByScore(sortedByFaculty);
 
-        for(int i = 0, k = 0; i < sortedByScore.size() && k < Faculties.getCount(faculty.toString()); i++, k++){
-            enrolledStudents.add(sortedByScore.get(i).getEnrollee());
+        for(int i = 0; i < sortedByScore.size() && i < Faculties.getCount(faculty.toString()); i++){
+            enrollees.add(sortedByScore.get(i));
         }
 
-        return enrolledStudents;
+        return enrollees;
     }
 
-    private List<Bill> sortedByScore(List<Bill> bills){
-        Bill buf;
+    private List<Enrollee> sortedByScore(List<Enrollee> enrollees) {
+        Enrollee buf;
 
         boolean isSorted = false;
         while(!isSorted) {
             isSorted = true;
-            for (int i = 0; i < bills.size() - 1; i++) {
-                if(bills.get(i).getEnrollee().getScore() < bills.get(i + 1).getEnrollee().getScore()){
-                    isSorted = false;
-                    buf = bills.get(i);
-                    bills.set(i,  bills.get(i + 1));
-                    bills.set(i + 1,  buf);
+            for (int i = 0; i < enrollees.size() - 1; i++) {
+                if(enrollees.get(i) != null) {
+                    if (averageSum(enrollees.get(i).getCertificate()) <
+                            averageSum(enrollees.get(i + 1).getCertificate())) {
+                        isSorted = false;
+                        buf = enrollees.get(i);
+                        enrollees.set(i, enrollees.get(i + 1));
+                        enrollees.set(i + 1, buf);
+                    }
                 }
             }
         }
 
-        return bills;
+        return enrollees;
     }
 
-    private List<Bill> sortedByFaculties(List<Bill> bills, Faculties faculty){
-        List<Bill> sortedByFaculties = new ArrayList<>();
+    private List<Enrollee> sortedByFaculties(List<Enrollee> enrollees, Faculties faculty){
+        List<Enrollee> sortedByFaculties = new ArrayList<>();
 
-        for(int i = 0; i < bills.size(); i++){
-            if(bills.get(i).getFaculty().getName().equals(faculty)){
-                sortedByFaculties.add(bills.get(i));
+        for(int i = 0; i < enrollees.size(); i++){
+            if(enrollees.get(i) != null) {
+                if (enrollees.get(i).getFaculty().getName().equals(faculty)) {
+                    sortedByFaculties.add(enrollees.get(i));
+                }
             }
         }
 
         return sortedByFaculties;
+    }
+
+    private double averageSum(Certificate certificate){
+        return certificate.getAverageScore()
+                + certificate.getFirstSubject()
+                + certificate.getSecondSubject()
+                + certificate.getThirdSubject();
     }
 }

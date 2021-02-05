@@ -1,7 +1,7 @@
 package org.example.model.dao.impl;
 
 import org.example.model.Const;
-import org.example.model.dao.DAO;
+import org.example.model.dao.EnrolleeInfoDAO;
 import org.example.model.entity.Faculty;
 import org.example.model.enums.Faculties;
 
@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class FacultyDAO implements DAO<Faculty> {
+public class FacultyDAO implements EnrolleeInfoDAO<Faculty> {
     private static FacultyDAO instance;
+
     private FacultyDAO(){}
+
     public static FacultyDAO getInstance(){
         if(instance == null){
             instance = new FacultyDAO();

@@ -3,71 +3,46 @@ package org.example.model.entity;
 import java.util.Objects;
 
 public class Bill {
+    private Administrator administrator;
 
-    private Enrollee enrollee;
-    private Faculty faculty;
+    private static Bill instance;
 
-    public Enrollee getEnrollee() {
-        return enrollee;
-    }
+    private Bill(){}
 
-    public void setEnrollee(Enrollee enrollee) {
-        this.enrollee = enrollee;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
-        this.faculty = faculty;
-    }
-
-    private Bill(Builder builder){
-        enrollee = builder.enrollee;
-        faculty = builder.faculty;
-    }
-
-    public static class Builder{
-        Enrollee enrollee;
-        Faculty faculty;
-
-        public Builder setEnrollee(Enrollee enrollee){
-            this.enrollee = enrollee;
-            return this;
+    public static Bill getInstance(){
+        if(instance == null){
+            instance = new Bill();
         }
+        return instance;
+    }
 
-        public Builder setFaculty(Faculty faculty){
-            this.faculty = faculty;
-            return this;
-        }
+    public Administrator getAdministrator() {
+        return administrator;
+    }
 
-        public Bill build(){
-            return new Bill(this);
-        }
+    public void setAdministrator(Administrator administrator) {
+        this.administrator = administrator;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Bill bill = (Bill) o;
-        return Objects.equals(enrollee, bill.enrollee) &&
-                Objects.equals(faculty, bill.faculty);
+        Administrator administrator = (Administrator) o;
+        return this.administrator == administrator;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(enrollee, faculty);
+        return Objects.hash(administrator);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(50);
-        return sb.append("Студент: ")
-                .append(enrollee)
-                .append("; факультет: ")
-                .append(faculty)
+        StringBuilder sb = new StringBuilder(100);
+        return sb.append("Администратор: ")
+                .append(administrator)
                 .toString();
     }
+
 }
