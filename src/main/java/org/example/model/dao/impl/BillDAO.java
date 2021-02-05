@@ -10,16 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BillDAO implements DAO<Bill> {
+    private List<Enrollee> enr = EnrolleeDAO.getInstance().read();
+    private List<Faculty> fac = FacultyDAO.getInstance().read();
+
+    private static BillDAO instance;
+    private BillDAO() throws IOException {}
+    public static BillDAO getInstance() throws IOException {
+        if(instance == null){
+            instance = new BillDAO();
+        }
+        return instance;
+    }
 
     @Override
     public List<Bill> read() throws IOException {
         List<Bill> bills = new ArrayList<>();
-        DAO enr = new EnrolleeDAO();
-        DAO fac = new FacultyDAO();
-        enr.read();
-        fac.read();
-        List<Enrollee> enrollees = enr.read();
-        List<Faculty> faculties = fac.read();
+        List<Enrollee> enrollees = enr;
+        List<Faculty> faculties = fac;
 
         for(int i = 0; i < enrollees.size() && i < faculties.size(); i++){
             bills.add(new Bill.Builder().setEnrollee(enrollees.get(i)).setFaculty(faculties.get(i)).build());

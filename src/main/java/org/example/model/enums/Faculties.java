@@ -1,17 +1,17 @@
 package org.example.model.enums;
 
 public enum Faculties {
-    поит,
-    тэрэс,
-    минтис;
+    poit,
+    teres,
+    mintis;
 
     public static int getCount(String faculty){
         switch(faculty.toLowerCase()){
-            case "поит":
+            case "poit":
                 return 2;
-            case "тэрэс" :
+            case "teres" :
                 return 2;
-            case "минтис":
+            case "mintis":
                 return 2;
             default: return 0;
         }

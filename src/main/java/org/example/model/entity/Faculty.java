@@ -1,7 +1,6 @@
 package org.example.model.entity;
 
 import org.example.model.enums.Faculties;
-
 import java.util.Objects;
 
 public class Faculty {
@@ -52,11 +51,13 @@ public class Faculty {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || this.getClass() != o.getClass())
+            return false;
         Faculty faculty = (Faculty) o;
         return studentCount == faculty.studentCount &&
-                Objects.equals(name, faculty.name);
+                name.equals(((Faculty) o).getName());
     }
 
     @Override
@@ -66,9 +67,11 @@ public class Faculty {
 
     @Override
     public String toString() {
-        return "Faculty{" +
-                "name='" + name + '\'' +
-                ", studentCount=" + studentCount +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        return sb.append("Название: ")
+                .append(name)
+                .append(". К-во студентов на факультете: ")
+                .append(studentCount)
+                .toString();
     }
 }

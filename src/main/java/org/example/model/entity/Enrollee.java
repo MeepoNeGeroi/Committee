@@ -1,5 +1,7 @@
 package org.example.model.entity;
 
+import java.util.Objects;
+
 public class Enrollee {
     private String name;
     private int age;
@@ -70,11 +72,30 @@ public class Enrollee {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Enrollee enrollee = (Enrollee) o;
+        return age == enrollee.age &&
+                Double.compare(enrollee.score, score) == 0 &&
+                Objects.equals(name, enrollee.name) &&
+                Objects.equals(faculty, enrollee.faculty);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age, score, faculty);
+    }
+
+    @Override
     public String toString() {
-        return "Enrollee{" +
-                "name='" + name + '\'' +
-                ", age=" + age +
-                ", score=" + score +
-                '}';
+        StringBuilder sb = new StringBuilder(100);
+        return sb.append("Имя: ")
+                .append(name)
+                .append(" возраст: ")
+                .append(age)
+                .append(". Средний балл: ")
+                .append(score)
+                .toString();
     }
 }

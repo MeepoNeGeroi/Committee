@@ -1,13 +1,9 @@
-package org.example.view;
+package org.example.controller;
 
-import org.example.controller.Command;
+import org.example.controller.command.Command;
 
 import java.io.IOException;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
     public static void main( String[] args ) throws IOException {

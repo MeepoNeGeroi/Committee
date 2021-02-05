@@ -1,5 +1,7 @@
 package org.example.model.entity;
 
+import java.util.Objects;
+
 public class Bill {
 
     private Enrollee enrollee;
@@ -46,10 +48,26 @@ public class Bill {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bill bill = (Bill) o;
+        return Objects.equals(enrollee, bill.enrollee) &&
+                Objects.equals(faculty, bill.faculty);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enrollee, faculty);
+    }
+
+    @Override
     public String toString() {
-        return "Bill{" +
-                "enrollee=" + enrollee +
-                ", faculty=" + faculty +
-                '}';
+        StringBuilder sb = new StringBuilder(50);
+        return sb.append("Студент: ")
+                .append(enrollee)
+                .append("; факультет: ")
+                .append(faculty)
+                .toString();
     }
 }

@@ -12,6 +12,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class FacultyDAO implements DAO<Faculty> {
+    private static FacultyDAO instance;
+    private FacultyDAO(){}
+    public static FacultyDAO getInstance(){
+        if(instance == null){
+            instance = new FacultyDAO();
+        }
+        return instance;
+    }
 
     @Override
     public List<Faculty> read() throws IOException {
@@ -29,8 +37,8 @@ public class FacultyDAO implements DAO<Faculty> {
                         .setStudentCount(studentCount).build());
             }
             catch (Exception e){
-                System.out.println("Неверный факультатив.");
-                faculties.add(new Faculty.Builder().setName(Faculties.тэрэс)
+                System.out.println("Неверный факультет.");
+                faculties.add(new Faculty.Builder().setName(Faculties.teres)
                         .setStudentCount(studentCount).build());
             }
         }

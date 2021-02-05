@@ -11,6 +11,14 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EnrolleeDAO implements DAO<Enrollee> {
+    private static EnrolleeDAO instance;
+    private EnrolleeDAO(){}
+    public static EnrolleeDAO getInstance(){
+        if(instance == null){
+            instance = new EnrolleeDAO();
+        }
+        return instance;
+    }
 
     @Override
     public List<Enrollee> read() throws IOException {

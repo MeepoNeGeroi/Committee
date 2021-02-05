@@ -12,7 +12,7 @@ import java.util.List;
 public class EnrolledStudentsService {
     public List<Enrollee> getEnrolledStudents(Faculties faculty) throws IOException {
         List<Enrollee> enrolledStudents = new ArrayList<>();
-        List<Bill> bills = new BillDAO().read();
+        List<Bill> bills = BillDAO.getInstance().read();
         List<Bill> sortedByFaculties = sortedByFaculties(bills, faculty);
         List<Bill> sortedByScore = sortedByScore(sortedByFaculties);
 
