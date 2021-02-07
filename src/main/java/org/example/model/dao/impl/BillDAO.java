@@ -1,18 +1,16 @@
 package org.example.model.dao.impl;
 
 import org.example.model.dao.DAO;
+import org.example.model.dao.exception.DAOException;
 import org.example.model.entity.Administrator;
 import org.example.model.entity.Bill;
 
-import java.io.IOException;
-
 public class BillDAO implements DAO<Bill> {
-    private Administrator administrator = AdministratorDAO.getInstance().read();
     private static BillDAO instance;
 
-    private BillDAO() throws IOException {}
+    private BillDAO() {}
 
-    public static BillDAO getInstance() throws IOException {
+    public static BillDAO getInstance() {
         if(instance == null){
             instance = new BillDAO();
         }
@@ -20,8 +18,9 @@ public class BillDAO implements DAO<Bill> {
     }
 
     @Override
-    public Bill read() throws IOException {
-        Bill bill = Bill.getInstance();
+    public Bill read() throws DAOException {
+        Administrator administrator = AdministratorDAO.getInstance().read();
+        Bill bill = new Bill();
         bill.setAdministrator(administrator);
 
         return bill;

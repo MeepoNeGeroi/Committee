@@ -1,7 +1,5 @@
 package org.example.model.entity;
 
-import org.example.model.dao.impl.FacultyDAO;
-
 import java.util.Objects;
 
 public class Committee {

@@ -1,15 +1,15 @@
-package org.example.model.enums;
+package org.example.model.enumeration;
 
 public enum Faculties {
-    poit,
-    teres,
-    mintis;
+    POIT,
+    TERES,
+    MINTIS;
 
     public static int getCount(String faculty){
         switch(faculty.toLowerCase()){
             case "poit":
                 return 2;
-            case "teres" :
+            case "teres":
                 return 2;
             case "mintis":
                 return 2;

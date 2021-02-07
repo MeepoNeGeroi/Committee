@@ -1,8 +1,7 @@
 package org.example.model.dao;
 
-import java.io.IOException;
-import java.util.List;
+import org.example.model.dao.exception.DAOException;
 
 public interface DAO<T> {
-    T read() throws IOException;
+    T read() throws DAOException;
 }

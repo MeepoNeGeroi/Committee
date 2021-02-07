@@ -1,6 +1,6 @@
 package org.example.model.entity;
 
-import org.example.model.enums.Faculties;
+import org.example.model.enumeration.Faculties;
 import java.util.Objects;
 
 public class Faculty {

@@ -1,26 +1,44 @@
 package org.example.model.service;
 
+import org.example.model.dao.exception.DAOException;
 import org.example.model.dao.impl.CommitteeDAO;
 import org.example.model.entity.*;
-import org.example.model.enums.Faculties;
+import org.example.model.enumeration.Faculties;
+import org.example.model.service.exception.ServiceException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnrolledStudentsService {
-    public List<Enrollee> getEnrolledStudents(Faculties faculty) throws IOException {
-        Committee committee = CommitteeDAO.getInstance().read();
-        List<Enrollee> enrollees = new ArrayList<>();
-        List<Enrollee> enrolledStudents = committee.getBill().getAdministrator().getEnrollee();
-        List<Enrollee> sortedByFaculty = sortedByFaculties(enrolledStudents, faculty);
-        List<Enrollee> sortedByScore = sortedByScore(sortedByFaculty);
+    private static EnrolledStudentsService instance;
 
-        for(int i = 0; i < sortedByScore.size() && i < Faculties.getCount(faculty.toString()); i++){
-            enrollees.add(sortedByScore.get(i));
+    private EnrolledStudentsService(){}
+
+    public static EnrolledStudentsService getInstance(){
+        if(instance == null){
+            instance = new EnrolledStudentsService();
         }
 
-        return enrollees;
+        return instance;
+    }
+
+    public List<Enrollee> getEnrolledStudents(Faculties faculty) throws ServiceException {
+        try {
+            Committee committee = CommitteeDAO.getInstance().read();
+            List<Enrollee> enrollees = new ArrayList<>();
+            List<Enrollee> enrolledStudents = committee.getBill().getAdministrator().getEnrollee();
+            List<Enrollee> sortedByFaculty = sortedByFaculties(enrolledStudents, faculty);
+            List<Enrollee> sortedByScore = sortedByScore(sortedByFaculty);
+
+            for (int i = 0; i < sortedByScore.size() && i < Faculties.getCount(faculty.toString()); i++) {
+                enrollees.add(sortedByScore.get(i));
+            }
+
+            return enrollees;
+        }
+        catch (Exception e){
+            throw new ServiceException();
+        }
     }
 
     private List<Enrollee> sortedByScore(List<Enrollee> enrollees) {

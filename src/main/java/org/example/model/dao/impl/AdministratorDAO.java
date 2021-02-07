@@ -2,17 +2,16 @@ package org.example.model.dao.impl;
 
 import org.example.model.dao.DAO;
 import org.example.model.entity.*;
+import org.example.model.dao.exception.DAOException;
 
-import java.io.IOException;
 import java.util.List;
 
 public class AdministratorDAO implements DAO<Administrator> {
     private static AdministratorDAO instance;
-    private List<Enrollee> enrollees = EnrolleeDAO.getInstance().read();
 
-    private AdministratorDAO() throws IOException {}
+    private AdministratorDAO(){}
 
-    public static AdministratorDAO getInstance() throws IOException {
+    public static AdministratorDAO getInstance() {
         if(instance == null){
             instance = new AdministratorDAO();
         }
@@ -20,14 +19,14 @@ public class AdministratorDAO implements DAO<Administrator> {
     }
 
     @Override
-    public Administrator read() {
+    public Administrator read() throws DAOException {
+        List<Enrollee> enrollees = EnrolleeDAO.getInstance().read();
         Administrator administrator = new Administrator.Builder().build();
-        List<Enrollee> enrollees = this.enrollees;
 
-        for(int i = 0; i < enrollees.size() && i < enrollees.size(); i++){
-            administrator = new Administrator.Builder()
-                    .setEnrollee(enrollees.get(i))
-                    .build();
+        for(int i = 0; i < enrollees.size(); i++){
+            List<Enrollee> buf = administrator.getEnrollee();
+            buf.add(enrollees.get(i));
+            administrator.setEnrollee(buf);
         }
 
         return administrator;

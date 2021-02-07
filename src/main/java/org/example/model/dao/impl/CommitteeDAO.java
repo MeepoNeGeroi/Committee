@@ -1,18 +1,16 @@
 package org.example.model.dao.impl;
 
 import org.example.model.dao.DAO;
+import org.example.model.dao.exception.DAOException;
 import org.example.model.entity.Bill;
 import org.example.model.entity.Committee;
 
-import java.io.IOException;
-
 public class CommitteeDAO implements DAO<Committee> {
-    private Bill bill = BillDAO.getInstance().read();
     private static CommitteeDAO instance;
 
-    private CommitteeDAO() throws IOException {}
+    private CommitteeDAO() throws DAOException {}
 
-    public static CommitteeDAO getInstance() throws IOException {
+    public static CommitteeDAO getInstance() throws DAOException{
         if(instance == null){
             instance = new CommitteeDAO();
         }
@@ -20,7 +18,8 @@ public class CommitteeDAO implements DAO<Committee> {
     }
 
     @Override
-    public Committee read() throws IOException {
+    public Committee read() throws DAOException {
+        Bill bill = BillDAO.getInstance().read();
         Committee committee = Committee.getInstance();
         committee.setBill(bill);
         return committee;

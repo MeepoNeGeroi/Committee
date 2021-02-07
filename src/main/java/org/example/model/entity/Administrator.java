@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Administrator {
-    private static List<Enrollee> enrollees = new ArrayList<>();
+    private List<Enrollee> enrollees = new ArrayList<>();
 
     public List<Enrollee> getEnrollee() {
         return enrollees;

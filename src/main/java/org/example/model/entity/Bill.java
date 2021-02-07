@@ -5,16 +5,7 @@ import java.util.Objects;
 public class Bill {
     private Administrator administrator;
 
-    private static Bill instance;
-
-    private Bill(){}
-
-    public static Bill getInstance(){
-        if(instance == null){
-            instance = new Bill();
-        }
-        return instance;
-    }
+    public Bill(){}
 
     public Administrator getAdministrator() {
         return administrator;
