@@ -1,6 +1,5 @@
 package org.example.model.service;
 
-import org.example.model.dao.exception.DAOException;
 import org.example.model.dao.impl.CommitteeDAO;
 import org.example.model.entity.*;
 import org.example.model.enumeration.Faculties;

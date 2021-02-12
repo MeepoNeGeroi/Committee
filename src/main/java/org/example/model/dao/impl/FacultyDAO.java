@@ -39,8 +39,6 @@ public class FacultyDAO implements EnrolleeInfoDAO<Faculty> {
                 faculties.add(new Faculty.Builder().setName(Faculties.valueOf(name.toUpperCase()))
                         .setStudentCount(studentCount).build());
                 fr.close();
-
-                return faculties;
             }
         }
         catch(Exception e){

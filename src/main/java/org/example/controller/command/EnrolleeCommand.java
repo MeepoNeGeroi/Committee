@@ -27,7 +27,7 @@ public class EnrolleeCommand {
                         String faculty = sc.next();
                         students = ess.getEnrolledStudents(Faculties.valueOf(faculty));
                         ui.enrolledStudentsInfo(students);
-                    } catch (Exception e) {
+                    } catch (IllegalArgumentException e) {
                         System.out.println("Такого факультета нет в нашем учебном заведении!");
                     }
                 } else if (variant == 2) {
