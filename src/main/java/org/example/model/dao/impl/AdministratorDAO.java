@@ -4,6 +4,7 @@ import org.example.model.dao.DAO;
 import org.example.model.entity.*;
 import org.example.model.dao.exception.DAOException;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class AdministratorDAO implements DAO<Administrator> {
@@ -19,7 +20,7 @@ public class AdministratorDAO implements DAO<Administrator> {
     }
 
     @Override
-    public Administrator read() throws DAOException {
+    public Administrator read() throws DAOException, SQLException {
         List<Enrollee> enrollees = EnrolleeDAO.getInstance().read();
         Administrator administrator = new Administrator.Builder().build();
 

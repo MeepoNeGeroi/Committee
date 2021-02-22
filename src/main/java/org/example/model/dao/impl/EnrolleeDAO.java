@@ -1,21 +1,22 @@
 package org.example.model.dao.impl;
 
 import org.example.model.Const;
+import org.example.model.JDBC;
 import org.example.model.dao.EnrolleeInfoDAO;
 import org.example.model.entity.Certificate;
 import org.example.model.entity.Enrollee;
-import org.example.model.entity.Faculty;
 import org.example.model.dao.exception.DAOException;
+import org.example.model.entity.Faculty;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EnrolleeDAO implements EnrolleeInfoDAO<Enrollee> {
+    public static  int id;
     private static EnrolleeDAO instance;
 
     private EnrolleeDAO() throws DAOException {}
@@ -28,71 +29,93 @@ public class EnrolleeDAO implements EnrolleeInfoDAO<Enrollee> {
     }
 
     @Override
-    public List<Enrollee> read() throws DAOException{
-        try {
-            List<Faculty> faculties = FacultyDAO.getInstance().read();
-            List<Certificate> certificates = CertificateDAO.getInstance().read();
-            List<Enrollee> enrollees = new ArrayList<>();
-            String name;
-            int i = 0;
-            int age;
+    public List<Enrollee> read() throws DAOException, SQLException {
+        List<Enrollee> enrollees = new ArrayList<>();
+        List<Faculty> faculties = FacultyDAO.getInstance().read();
+        List<Certificate> certificates = CertificateDAO.getInstance().read();
+        String enrolleeSql = "SELECT * FROM ENROLLEE";
+        Connection conn = new JDBC().getConnection();
 
-            FileReader fr = new FileReader(Const.AB_PATH);
-            Scanner sc = new Scanner(fr);
-            while (sc.hasNextLine()) {
-                name = sc.nextLine();
-                age = Integer.parseInt(sc.nextLine());
+        Statement statement = conn.createStatement();
+        ResultSet result = statement.executeQuery(enrolleeSql);
 
-                Enrollee enrollee = new Enrollee();
-                enrollee.setAge(age);
-                enrollee.setName(name);
-                enrollee.setFaculty(faculties.get(i));
-                enrollee.setCertificate(certificates.get(i));
-                i++;
-                if (enrollee != null) {
-                    enrollees.add(enrollee);
-                }
-            }
-            fr.close();
-
-            return enrollees;
+        while(result.next()){
+            String name = result.getString(2);
+            int age = result.getInt(3);
+            Enrollee enrollee = new Enrollee();
+            enrollee.setAge(age);
+            enrollee.setName(name);
+            enrollee.setFaculty(faculties.get(result.getInt(4) - 1));
+            enrollee.setCertificate(certificates.get(result.getInt(5) - 1));
+            enrollees.add(enrollee);
         }
-        catch (Exception e){
-            throw new DAOException();
-        }
+
+        return enrollees;
     }
 
     @Override
-    public void delete(int index) throws DAOException {
-        List<String> text = readTextFromFile();
-        text.remove(index * 2);
-        text.remove(index * 2);
-        writeTextInFile(text);
+    public void delete(int index) throws DAOException, SQLException {
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
+        String sql = "DELETE FROM enrollee WHERE enrolleeId = ?";
+        String certificateQuery = "SELECT certificateId FROM enrollee WHERE enrolleeId = ?";
+        PreparedStatement statement = conn.prepareStatement(certificateQuery);
+        statement.setString(1, index + "");
+        ResultSet result = statement.executeQuery();
+        result.next();
+        CertificateDAO.getInstance().delete(result.getInt(1));
 
-        FacultyDAO.getInstance().delete(index);
-        CertificateDAO.getInstance().delete(index);
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, index + "");
+        st.executeUpdate();
     }
 
     @Override
-    public void update(int index, Enrollee enrollee) throws DAOException {
-        List<String> text = readTextFromFile();
-        text.set(index * 2, enrollee.getName());
-        text.set(index * 2 + 1, enrollee.getAge() + "");
-        writeTextInFile(text);
+    public void update(int index, Enrollee enrollee) throws DAOException, SQLException {
+        String sql = "UPDATE enrollee SET name = ?, age = ?, facultyId = ? WHERE enrolleeId = ?";
+        String idQuery = "SELECT certificateId FROM enrollee WHERE enrolleeId = " + index;
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
 
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setString(1, enrollee.getName());
+        statement.setString(2, enrollee.getAge() + "");
+        statement.setString(3, "1");
+        statement.setString(4, index + "");
+        statement.executeUpdate();
+        Statement st = conn.createStatement();
         FacultyDAO.getInstance().update(index, enrollee.getFaculty());
+        ResultSet result = st.executeQuery(idQuery);
+        result.next();
+        index = result.getInt(1);
         CertificateDAO.getInstance().update(index, enrollee.getCertificate());
     }
 
     @Override
-    public void create(Enrollee enrollee) throws DAOException {
-        List<String> text = readTextFromFile();
-        text.add(enrollee.getName());
-        text.add(enrollee.getAge() + "");
-        writeTextInFile(text);
-
+    public void create(Enrollee enrollee) throws DAOException, SQLException {
+        int id = 0;
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
+        String sql = "SELECT enrolleeId FROM enrollee";
+        Statement statement = conn.createStatement();
+        ResultSet result = statement.executeQuery(sql);
+        while(result.next()){
+            id = result.getInt(1);
+        }
+        id++;
+        this.id = id;
+        String createQuery = "INSERT INTO enrollee VALUES(?, ?, ?, 0, 0)";
+        PreparedStatement st = conn.prepareStatement(createQuery);
+        st.setString(1, id + "");
+        st.setString(2, enrollee.getName());
+        st.setString(3, enrollee.getAge() + "");
+        st.executeUpdate();
         FacultyDAO.getInstance().create(enrollee.getFaculty());
         CertificateDAO.getInstance().create(enrollee.getCertificate());
+//        List<String> text = readTextFromFile();
+//        text.add(enrollee.getName());
+//        text.add(enrollee.getAge() + "");
+//        writeTextInFile(text);
+//
+//        FacultyDAO.getInstance().create(enrollee.getFaculty());
+//        CertificateDAO.getInstance().create(enrollee.getCertificate());
     }
 
     private List<String> readTextFromFile() throws DAOException {

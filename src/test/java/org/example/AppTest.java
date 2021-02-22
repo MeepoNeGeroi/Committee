@@ -11,6 +11,7 @@ import org.example.model.entity.Administrator;
 import org.example.model.entity.Enrollee;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -22,7 +23,9 @@ public class AppTest
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue() {
-        assertTrue(true);
+    public void administratorNotNullTest() throws DAOException, SQLException {
+        AdministratorDAO ad = AdministratorDAO.getInstance();
+        Administrator a = ad.read();
+        assertNotNull(a);
     }
 }

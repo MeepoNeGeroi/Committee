@@ -5,6 +5,8 @@ import org.example.model.dao.exception.DAOException;
 import org.example.model.entity.Administrator;
 import org.example.model.entity.Bill;
 
+import java.sql.SQLException;
+
 public class BillDAO implements DAO<Bill> {
     private static BillDAO instance;
 
@@ -18,7 +20,7 @@ public class BillDAO implements DAO<Bill> {
     }
 
     @Override
-    public Bill read() throws DAOException {
+    public Bill read() throws DAOException, SQLException {
         Administrator administrator = AdministratorDAO.getInstance().read();
         Bill bill = new Bill();
         bill.setAdministrator(administrator);

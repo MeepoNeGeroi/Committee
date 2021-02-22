@@ -25,6 +25,7 @@ public class EnrolledStudentsService {
         try {
             Committee committee = CommitteeDAO.getInstance().read();
             List<Enrollee> enrollees = new ArrayList<>();
+
             List<Enrollee> enrolledStudents = committee.getBill().getAdministrator().getEnrollee();
             List<Enrollee> sortedByFaculty = sortedByFaculties(enrolledStudents, faculty);
             List<Enrollee> sortedByScore = sortedByScore(sortedByFaculty);

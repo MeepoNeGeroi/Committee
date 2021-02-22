@@ -5,6 +5,8 @@ import org.example.model.dao.exception.DAOException;
 import org.example.model.entity.Bill;
 import org.example.model.entity.Committee;
 
+import java.sql.SQLException;
+
 public class CommitteeDAO implements DAO<Committee> {
     private static CommitteeDAO instance;
 
@@ -18,7 +20,7 @@ public class CommitteeDAO implements DAO<Committee> {
     }
 
     @Override
-    public Committee read() throws DAOException {
+    public Committee read() throws DAOException, SQLException {
         Bill bill = BillDAO.getInstance().read();
         Committee committee = Committee.getInstance();
         committee.setBill(bill);

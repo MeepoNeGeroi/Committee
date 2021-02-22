@@ -8,6 +8,7 @@ import org.example.model.enumeration.Faculties;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -25,26 +26,25 @@ public class FacultyDAO implements EnrolleeInfoDAO<Faculty> {
     }
 
     @Override
-    public List<Faculty> read() throws DAOException {
+    public List<Faculty> read() throws SQLException {
         List<Faculty> faculties = new ArrayList<>();
-        try {
-            String name;
-            int studentCount;
+        String facultySql = "SELECT * FROM FACULTY";
 
-            FileReader fr = new FileReader(Const.FAC_PATH);
-            Scanner sc = new Scanner(fr);
-            while (sc.hasNextLine()) {
-                name = sc.nextLine();
-                studentCount = Faculties.getCount(name);
-                faculties.add(new Faculty.Builder().setName(Faculties.valueOf(name.toUpperCase()))
-                        .setStudentCount(studentCount).build());
-                fr.close();
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(facultySql);
+
+            while (result.next()) {
+                String name = result.getString(2);
+                int studentCount = result.getInt(3);
+
+                Faculty faculty = new Faculty.Builder()
+                        .setName(Faculties.valueOf(name))
+                        .setStudentCount(studentCount).build();
+                faculties.add(faculty);
             }
-        }
-        catch(Exception e){
-            throw new DAOException();
-        }
-        return faculties;
+
+            return faculties;
     }
 
     @Override
@@ -55,17 +55,45 @@ public class FacultyDAO implements EnrolleeInfoDAO<Faculty> {
     }
 
     @Override
-    public void update(int index, Faculty faculty) throws DAOException {
-        List<String> text = readTextFromFile();
-        text.set(index, faculty.getName().toString());
-        writeTextInFile(text);
+    public void update(int index, Faculty faculty) throws DAOException, SQLException {
+        String sql = "SELECT facultyId FROM faculty WHERE name = ?";
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, faculty.getName() + "");
+        ResultSet result = st.executeQuery();
+        result.next();
+        int facultyId = result.getInt(1);
+
+        sql = "UPDATE enrollee SET facultyId = "
+                + facultyId
+                + " WHERE enrolleeId = "
+                + index;
+
+        PreparedStatement statement = conn.prepareStatement(sql);
+
+        statement.executeUpdate();
     }
 
     @Override
-    public void create(Faculty faculty) throws DAOException {
-        List<String> text = readTextFromFile();
-        text.add(faculty.getName().toString());
-        writeTextInFile(text);
+    public void create(Faculty faculty) throws DAOException, SQLException {
+        String sql = "SELECT facultyId FROM faculty WHERE name = ?";
+        Connection conn = DriverManager.getConnection(Const.dbURL, Const.username, Const.password);
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, faculty.getName() + "");
+        ResultSet result = st.executeQuery();
+        result.next();
+        int facultyId = result.getInt(1);
+        sql = "UPDATE enrollee SET facultyId = "
+                + facultyId
+                + " WHERE enrolleeId = "
+                + EnrolleeDAO.id;
+
+        PreparedStatement statement = conn.prepareStatement(sql);
+
+        statement.executeUpdate();
+//        List<String> text = readTextFromFile();
+//        text.add(faculty.getName().toString());
+//        writeTextInFile(text);
     }
 
     private List<String> readTextFromFile() throws DAOException {
