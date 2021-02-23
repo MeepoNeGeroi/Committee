@@ -1,7 +1,7 @@
 package org.example.model.service;
 
 import org.example.model.Const;
-import org.example.model.dao.exception.DAOException;
+import org.example.model.dao.impl.UserDAO;
 import org.example.model.entity.User;
 import org.example.model.service.exception.ServiceException;
 import org.example.view.RegistrationAuthenticationUI;
@@ -27,15 +27,14 @@ public class RegistrationService {
 
     public boolean registration(User user) throws ServiceException {
         try {
-            List<String> text = readTextFromFile();
-            if (!checkLogin(user.getLogin(), text)) {
+            List<User> users = UserDAO.getInstance().read();
+
+            if (!checkLogin(user.getLogin(), users)) {
                 RegistrationAuthenticationUI registrationAuthenticationUI = new RegistrationAuthenticationUI();
                 registrationAuthenticationUI.wrongLoginMessage();
                 return false;
             }
-            text.add(user.getLogin());
-            text.add(user.getPassword());
-            writeTextInFile(text);
+            UserDAO.getInstance().create(user);
             return true;
         }
         catch (Exception e){
@@ -43,9 +42,9 @@ public class RegistrationService {
         }
     }
 
-    private boolean checkLogin(String login, List<String> text){
-        for(int i = 0; i < text.size(); i += 2){
-            if(login.equals(text.get(i))){
+    private boolean checkLogin(String login, List<User> users){
+        for(int i = 0; i < users.size(); i += 2){
+            if(login.equals(users.get(i).getLogin())){
                 return false;
             }
         }
